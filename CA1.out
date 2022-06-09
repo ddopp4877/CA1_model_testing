@@ -1,0 +1,17 @@
+numprocs=60
+NEURON -- VERSION 7.7.2 7.7 (2b7985ba) 2019-06-20
+Duke, Yale, and the BlueBrain Project -- Copyright 1984-2018
+See http://neuron.yale.edu/neuron/credits
+
+2022-01-04 13:02:15,998 [INFO] Created log file
+2022-01-04 13:02:16,000 [INFO] Running NEURON with mpi (60 cores).
+Additional mechanisms from files
+ modfiles//bg2pyr.mod modfiles//ch_CavL.mod modfiles//ch_CavN.mod modfiles//ch_HCN.mod modfiles//ch_HCNolm.mod modfiles//ch_HCNp.mod modfiles//ch_KCaS.mod modfiles//ch_Kdrfast.mod modfiles//ch_Kdrfastngf.mod modfiles//ch_Kdrp.mod modfiles//ch_Kdrslow.mod modfiles//ch_KvAdistp.mod modfiles//ch_KvA.mod modfiles//ch_KvAngf.mod modfiles//ch_KvAolm.mod modfiles//ch_KvAproxp.mod modfiles//ch_KvCaB.mod modfiles//ch_KvGroup.mod modfiles//ch_KvM.mod modfiles//ch_leak.mod modfiles//chn2pyr.mod modfiles//ch_Navaxonp.mod modfiles//ch_Navbis.mod modfiles//ch_Navcck.mod modfiles//ch_Nav.mod modfiles//ch_Navngf.mod modfiles//ch_Navp.mod modfiles//ExpGABAab.mod modfiles//fastconn.mod modfiles//iconc_Ca.mod modfiles//int2int.mod modfiles//int2pyr.mod modfiles//kv.mod modfiles//MyExp2Sid.mod modfiles//MyExp2Sidnw.mod modfiles//mynetstim.mod modfiles//na12.mod modfiles//na16.mod modfiles//positionfcns.mod modfiles//pyr2int.mod modfiles//pyr2pyr.mod modfiles//repeatconn.mod modfiles//sgate.mod modfiles//SIN.mod modfiles//xtra.mod
+2022-01-04 13:02:29,542 [INFO] Building cells.
+2022-01-04 13:05:48,234 [INFO] Building recurrent connections
+2022-01-04 13:06:50,782 [INFO] Running simulation for 250.000 ms with the time step 0.100 ms
+2022-01-04 13:06:50,782 [INFO] Starting timestep: 0 at t_sim: 0.000 ms
+2022-01-04 13:06:50,782 [INFO] Block save every 2500 steps
+2022-01-04 13:16:27,176 [INFO]     step:2500 t_sim:250.00 ms
+2022-01-04 13:16:39,068 [INFO] Simulation completed in 9.0 minutes, 49.88 seconds 
+Done running model at Tue Jan  4 13:16:41 CST 2022

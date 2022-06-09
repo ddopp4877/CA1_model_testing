@@ -1,0 +1,798 @@
+begintemplate pyramidalcell
+
+// public variables
+public is_art, gid, randi, Vrest
+public init, topol, basic_shape, subsets, geom, biophys
+public pre_list, connect_pre
+
+public soma, apic, dend, axon
+public all, dend_list, apical, somatic, axonal, rad_list, lm_list, dendrite_list
+public x, y, z, position, myroot, Vrest
+
+public pyramidalcell_list, axoaxoniccell_list, bistratifiedcell_list, cckcell_list
+public ivycell_list, ngfcell_list, olmcell_list, pvbasketcell_list, scacell_list
+public eccell_list, ca3cell_list, mscell_list
+public NumSoma, Numapic, Numdend, NumAxon
+
+// strings
+strdef myroot
+
+// objects
+objref syn, pre_list, templist, rootlist, this
+
+//external variables
+//external numCellTypes, cellType
+
+// create the sections[segments]
+NumSoma=13
+Numapic=127
+Numdend=60
+NumAxon=12
+create soma[NumSoma], apic[Numapic], dend[Numdend], axon[NumAxon]
+
+// set the initialization code, which is run whenever a new object
+// of this class is instantiated
+proc init() {
+	//gid = $1
+	//randi = $2
+	Vrest = -66 // -65 // $3 resting membrane potential in mV
+	// cell sections: soma, dendrites, axon
+	append_sections() // append all sections to the section list
+	connect_sections()// connect soma, dendrites, axon
+	size_sections1()	// set the size dimensions of each section
+	size_sections2()	// set the size dimensions of each section
+	size_sections3()	// set the size dimensions of each section
+	define_shape()
+
+	// subcellular mechanisms: channels, pumps, transporters
+	mechinit()			// local fcn: set values for max conductances and reversal potentials of ion channels and other ephys parameters that are subject to fitting
+	insert_mechs()		// local fcn: insert ion channels and actually set values determined in the mechinit fcn
+
+	set_nseg()		// set the number of segments in each section
+					// if this is driven by an error-minimization rule,
+					// make sure to do it after setting the morphology
+					// and inserting the mechanisms, as it depends on those
+	//get_root()
+	rotate_shape()
+
+	//pre_list = new List() // define a list for the presynaptic connections
+	//define_synapses($3)	// local fcn: define all possible synaptic connections received by this cell
+}
+
+proc connect_sections() {
+	soma[0] {connect soma[1]  (0), 1
+			connect dend[0] (0),0
+			connect dend[20] (0),0
+			connect dend[23] (0),0
+			connect dend[41] (0),0}
+
+	soma[1]  connect soma[2]  (0), 1
+	soma[2]  {connect soma[3]  (0), 1
+			 connect axon[0](0),0.5}
+	for i=1,11{connect axon[i](0), axon[i-1](1)}
+	soma[3]  connect soma[4]  (0), 1
+	soma[4]  connect soma[5]  (0), 1
+	soma[5]  connect soma[6]  (0), 1
+	soma[6]  connect soma[7]  (0), 1
+	soma[7]  connect soma[8]  (0), 1
+	soma[8]  connect soma[9]  (0), 1
+	soma[9]  connect soma[10]  (0), 1
+	soma[10]  connect soma[11]  (0), 1
+	soma[11]  connect soma[12]  (0), 1
+
+	soma[12]  connect apic[0]  (0), 1
+
+	apic[0]   connect apic[ 1]  (0), 1
+	apic[1]   connect apic[ 2]  (0), 1
+	apic[2]  {connect apic[121]  (0), 1
+				connect apic[ 3]  (0), 1}
+	apic[3]   connect apic[ 4]  (0), 1
+	apic[4]   connect apic[ 5]  (0), 1
+	apic[5]  {connect apic[ 6]  (0), 1
+				connect apic[113]  (0), 1}
+	apic[6]  {connect apic[ 7]  (0), 1
+				connect apic[112]  (0), 1}
+	apic[7]  {connect apic[106]  (0), 1
+				connect apic[ 8]  (0), 1}
+	apic[8]  {connect apic[ 9]  (0), 1
+				connect apic[105]  (0), 1}
+	apic[9]  {connect apic[103]  (0), 1
+				connect apic[ 10] (0), 1}
+	apic[10] {connect apic[ 11] (0), 1
+				connect apic[102]  (0), 1}
+	apic[11] {connect apic[101]  (0), 1
+				connect apic[ 12] (0), 1}
+	apic[12] {connect apic[ 13] (0), 1
+				connect apic[90]   (0), 1}
+	apic[13] {connect apic[78]  (0), 1
+				connect apic[ 14] (0), 1}
+	apic[14] {connect apic[76]  (0), 1
+				connect apic[ 15] (0), 1}
+	apic[15] {connect apic[ 16] (0), 1
+				connect apic[64]  (0), 1}
+	apic[16] {connect apic[26]  (0), 1
+				connect apic[ 17] (0), 1}
+	apic[17]  connect apic[ 18] (0), 1
+	apic[18] {connect apic[ 19] (0), 1
+				connect apic[21]  (0), 1}
+	apic[19]  connect apic[ 20] (0), 1
+	apic[21] {connect apic[ 22] (0), 1
+				connect apic[23]  (0), 1}
+	apic[23] {connect apic[ 24] (0), 1
+				connect apic[25]  (0), 1}
+	apic[26]  connect apic[ 27] (0), 1
+	apic[27] {connect apic[ 28] (0), 1
+				connect apic[39]  (0), 1}
+	apic[28]  connect apic[ 29] (0), 1
+	apic[29]  connect apic[ 30] (0), 1
+	apic[30] {connect apic[ 31] (0), 1
+				connect apic[38]  (0), 1}
+	apic[31] {connect apic[ 32] (0), 1
+				connect apic[35]  (0), 1}
+	apic[32] {connect apic[ 33] (0), 1
+				connect apic[34]  (0), 1}
+	apic[35] {connect apic[ 36] (0), 1
+				connect apic[37]  (0), 1}
+	apic[39] {connect apic[ 40] (0), 1
+				connect apic[59]  (0), 1}
+	apic[40] {connect apic[ 41] (0), 1
+				connect apic[50]  (0), 1}
+	apic[41] {connect apic[ 42] (0), 1
+				connect apic[49]  (0), 1}
+	apic[42]  connect apic[ 43] (0), 1
+	apic[43] {connect apic[ 44] (0), 1
+				connect apic[48]  (0), 1}
+	apic[44] {connect apic[ 45] (0), 1
+				connect apic[47]  (0), 1}
+	apic[45]  connect apic[ 46] (0), 1
+	apic[50] {connect apic[ 51] (0), 1
+				connect apic[52]  (0), 1}
+	apic[52] {connect apic[ 53] (0), 1
+				connect apic[56]  (0), 1}
+	apic[53] {connect apic[ 54] (0), 1
+				connect apic[55]  (0), 1}
+	apic[56] {connect apic[ 57] (0), 1
+				connect apic[58]  (0), 1}
+	apic[59] {connect apic[ 60] (0), 1
+				connect apic[61]  (0), 1}
+	apic[61] {connect apic[ 62] (0), 1
+				connect apic[63]  (0), 1}
+	apic[64] {connect apic[ 65] (0), 1
+				connect apic[72]  (0), 1}
+	apic[65] {connect apic[ 66] (0), 1
+				connect apic[71]  (0), 1}
+	apic[66] {connect apic[ 67] (0), 1
+				connect apic[70]  (0), 1}
+	apic[67] {connect apic[ 68] (0), 1
+				connect apic[69]  (0), 1}
+	apic[72]  connect apic[ 73] (0), 1
+	apic[73] {connect apic[ 74] (0), 1
+				connect apic[75]  (0), 1}
+	apic[76]  connect apic[ 77] (0), 1
+	apic[78] {connect apic[ 79] (0), 1
+				connect apic[80]  (0), 1}
+	apic[80] {connect apic[ 81] (0), 1
+				connect apic[89]   (0), 1}
+	apic[81] {connect apic[ 82] (0), 1
+				connect apic[88]   (0), 1}
+	apic[82] {connect apic[ 83] (0), 1
+				connect apic[87]   (0), 1}
+	apic[83] {connect apic[ 84] (0), 1
+				connect apic[85]  (0), 1}
+	apic[85]  connect apic[ 86] (0), 1
+	apic[90]  {connect apic[ 91]  (0), 1
+				connect apic[100]  (0), 1}
+	apic[91]  {connect apic[ 92]  (0), 1
+				connect apic[97]   (0), 1}
+	apic[92]  {connect apic[ 93]  (0), 1
+				connect apic[96]   (0), 1}
+	apic[93]  {connect apic[ 94]  (0), 1
+				connect apic[95]   (0), 1}
+	apic[97]  {connect apic[ 98]  (0), 1
+				connect apic[99]   (0), 1}
+	apic[103]  connect apic[ 104] (0), 1
+	apic[106] {connect apic[ 107] (0), 1
+				connect apic[109]  (0), 1}
+	apic[107]  connect apic[ 108] (0), 1
+	apic[109] {connect apic[ 110] (0), 1
+				connect apic[111]  (0), 1}
+	apic[113] {connect apic[ 114] (0), 1
+				connect apic[120]  (0), 1}
+	apic[114]  connect apic[ 115] (0), 1
+	apic[115] {connect apic[ 116] (0), 1
+				connect apic[119]  (0), 1}
+	apic[116]  connect apic[ 117] (0), 1
+	apic[117]  connect apic[ 118] (0), 1
+	apic[121]  connect apic[ 122] (0), 1
+	apic[122] {connect apic[ 123] (0), 1
+				connect apic[126]  (0), 1}
+	apic[123] {connect apic[ 124] (0), 1
+				connect apic[125]  (0), 1}
+	dend[0] {connect dend[1]  (0), 1
+				connect dend[12]  (0), 1}
+	dend[1] {connect dend[2]  (0), 1
+				connect dend[9]  (0), 1}
+	dend[2] {connect dend[3]  (0), 1
+				connect dend[8]  (0), 1}
+	dend[3] {connect dend[4]  (0), 1
+				connect dend[5]  (0), 1}
+	dend[5] {connect dend[6]  (0), 1
+				connect dend[7]  (0), 1}
+	dend[9] {connect dend[10]  (0), 1
+				connect dend[11]  (0), 1}
+	dend[12] {connect dend[13]  (0), 1
+				connect dend[19]  (0), 1}
+	dend[13]  connect dend[14]  (0), 1
+	dend[14] {connect dend[15]  (0), 1
+				connect dend[18]  (0), 1}
+	dend[15] {connect dend[16]  (0), 1
+				connect dend[17]  (0), 1}
+	dend[20] {connect dend[ 21] (0), 1
+				connect dend[22] (0), 1}
+	dend[23] {connect dend[ 24] (0), 1
+				connect dend[38]  (0), 1}
+	dend[24] {connect dend[ 25] (0), 1
+				connect dend[33]  (0), 1}
+	dend[25] connect dend[ 26] (0), 1
+	dend[26] {connect dend[ 27] (0), 1
+				connect dend[32] (0), 1}
+	dend[27] {connect dend[ 28] (0), 1
+				connect dend[31] (0), 1}
+	dend[28] {connect dend[ 29] (0), 1
+				connect dend[30] (0), 1}
+	dend[33] {connect dend[ 34] (0), 1
+				connect dend[37]  (0), 1}
+	dend[34] {connect dend[ 35] (0), 1
+				connect dend[36]  (0), 1}
+	dend[38] {connect dend[ 39] (0), 1
+				connect dend[40]  (0), 1}
+	dend[41] {connect dend[ 42] (0), 1
+				connect dend[59]  (0), 1}
+	dend[42] {connect dend[ 43] (0), 1
+				connect dend[51]  (0), 1}
+	dend[43] connect dend[ 44] (0), 1
+	dend[44] {connect dend[ 45] (0), 1
+				connect dend[50] (0), 1}
+	dend[45] {connect dend[ 46] (0), 1
+				connect dend[49] (0), 1}
+	dend[46] {connect dend[ 47] (0), 1
+				connect dend[48] (0), 1}
+	dend[51] {connect dend[ 52] (0), 1
+				connect dend[54]  (0), 1}
+	dend[52] connect dend[ 53] (0), 1
+	dend[54] {connect dend[ 55] (0), 1
+				connect dend[58]  (0), 1}
+	dend[55] {connect dend[ 56] (0), 1
+				connect dend[57]  (0), 1}
+}
+
+
+objref all, dend_list, apical, somatic, axonal, rad_list, lm_list, dendrite_list
+objref pyramidalcell_list, axoaxoniccell_list, bistratifiedcell_list, cckcell_list
+objref ivycell_list, ngfcell_list, olmcell_list, pvbasketcell_list, scacell_list
+objref eccell_list, ca3cell_list, mscell_list
+
+proc append_sections() { local i
+	NumSoma=13
+	Numapic=127
+	Numdend=60
+	NumAxon=2
+
+	objref all, dend_list, apical, somatic, axonal, rad_list, lm_list, dendrite_list
+	objref pyramidalcell_list, axoaxoniccell_list, bistratifiedcell_list, cckcell_list
+	objref ivycell_list, ngfcell_list, olmcell_list, pvbasketcell_list, scacell_list
+	objref eccell_list, ca3cell_list, mscell_list
+
+	all = new SectionList()
+	dend_list = new SectionList()
+	apical = new SectionList()
+	somatic = new SectionList()
+	axonal = new SectionList()
+	rad_list = new SectionList()
+	lm_list = new SectionList()
+	dendrite_list = new SectionList()
+
+	pyramidalcell_list = new SectionList()
+	axoaxoniccell_list = new SectionList()
+	bistratifiedcell_list = new SectionList()
+	cckcell_list = new SectionList()
+	ivycell_list = new SectionList()
+	ngfcell_list = new SectionList()
+	olmcell_list = new SectionList()
+	pvbasketcell_list = new SectionList()
+	scacell_list = new SectionList()
+	eccell_list = new SectionList()
+	ca3cell_list = new SectionList()
+	mscell_list = new SectionList()
+
+	axon[0] all.append()
+	axon[1] all.append()
+	axon[2] all.append()
+	axon[3] all.append()
+	axon[4] all.append()
+
+	axon[5] all.append()
+	axon[6] all.append()
+	axon[7] all.append()
+	axon[8] all.append()
+	axon[9] all.append()
+	axon[10] all.append()
+	axon[11] all.append()
+
+	for i=0,11{
+		axon[i] axonal.append()
+	}
+
+	for i=0,NumSoma-1 soma[i] { all.append()
+								somatic.append()}
+	for i=0,Numdend-1 dend[i] { all.append()
+								dend_list.append()
+								dendrite_list.append()}
+	for i=0,Numapic-1 apic[i] { all.append()
+								apical.append()
+								dendrite_list.append()}
+
+
+
+	for i=0, 17 apic[i] { rad_list.append()}
+	for i=26, 28 apic[i] { rad_list.append()}
+	for i=64, 64 apic[i] { rad_list.append()}
+	for i=76, 80 apic[i] { rad_list.append()}
+	for i=90, 126 apic[i] { rad_list.append()}
+
+	for i=18, 25 apic[i] { lm_list.append()}
+	for i=29, 63 apic[i] { lm_list.append()}
+	for i=65, 75 apic[i] { lm_list.append()}
+	for i=81, 89 apic[i] { lm_list.append()}
+
+// precell lists
+	forsec dend_list {pyramidalcell_list.append()}
+	forsec axonal {axoaxoniccell_list.append()}
+	forsec dend_list {bistratifiedcell_list.append()}
+	forsec rad_list {bistratifiedcell_list.append()}
+	forsec somatic {cckcell_list.append()}
+	forsec dend_list {ivycell_list.append()}
+	forsec rad_list {ivycell_list.append()}
+	forsec lm_list {ngfcell_list.append()}
+	forsec lm_list {olmcell_list.append()}
+	forsec somatic {pvbasketcell_list.append()}
+	forsec dend_list {scacell_list.append()}
+	forsec rad_list {scacell_list.append()}
+	forsec lm_list {eccell_list.append()}
+	forsec lm_list {eccell_list.append()}
+	forsec lm_list {eccell_list.append()} // append the same list 3 times to weight it more heavily against the dend list for synapse choice for eccells
+	forsec rad_list {ca3cell_list.append()}
+	forsec rad_list {mscell_list.append()}
+	forsec dend_list {eccell_list.append()}
+	forsec dend_list {ca3cell_list.append()}
+}
+
+
+proc size_sections1() {
+	axon[0]  {nseg=1 diam=6 L=2}
+	axon[1]  {nseg=1 diam=5 L=2}
+	axon[2]  {nseg=1 diam=4 L=2}
+	axon[3]  {nseg=1 diam=3 L=2}
+	axon[4]  {nseg=1 diam=2 L=2}
+	axon[5]  {nseg=1 diam=1.3 L=2}
+	axon[6]  {nseg=1 diam=1.22 L=5}
+	axon[7]  {nseg=1 diam=1.22 L=5}
+	axon[8]  {nseg=1 diam=1.22 L=5}
+	axon[9]  {nseg=1 diam=1.22 L=5}
+	axon[10]  {nseg=1 diam=1.22 L=5}
+	axon[11]  {nseg=1 diam=1.22 L=100}
+	soma[0]  {nseg=1 diam= 3.4  L= .5  }
+	soma[1]  {nseg=1 diam= 3.4  L= .1  }
+	soma[2]  {nseg=1 diam= 5.8  L= .5852348  }
+	soma[3]  {nseg=1 diam= 7.4  L= 2.362393  }
+	soma[4]  {nseg=1 diam= 8.4  L= 1.030922  }
+	soma[5]  {nseg=1 diam= 9  L= 5.08973  }
+	soma[6]  {nseg=1 diam= 8.4  L= 2.161421  }
+	soma[7]  {nseg=1 diam= 7.4  L= 1.391761  }
+	soma[8]  {nseg=1 diam= 7  L= .7244999  }
+	soma[9]  {nseg=1 diam= 6.8  L= 1.021421  }
+	soma[10]  {nseg=1 diam= 5.8  L= .8354636  }
+	soma[11]  {nseg=1 diam= 4.8  L= .6500001  }
+	soma[12]  {nseg=1 diam= 4.2  L= 1.947434  }
+
+	apic[0]   {nseg=1 diam= 3.8  L= 2.715308  }
+	apic[1]   {nseg=1 diam= 3.6  L= 5.401713  }
+	apic[2]   {nseg=1 diam= 3  L= 3.876953  }
+	apic[3]   {nseg=1 diam= 3  L= 4.32302  }
+	apic[4]   {nseg=1 diam= 2.2  L= 9.503437  }
+	apic[5]   {nseg=2 diam= 2  L= 45.0123  }
+	apic[6]   {nseg=1 diam= 2  L= 31.20716  }
+	apic[7]   {nseg=1 diam= 2  L= 22.61171  }
+	apic[8]   {nseg=2 diam= 2  L= 37.90814  }
+	apic[9]   {nseg=1 diam= 2  L= 1.899714  }
+	apic[10]  {nseg=1 diam= 2  L= 2.305321  }
+	apic[11]  {nseg=1 diam= 2  L= 3.767573  }
+	apic[12]  {nseg=2 diam= 2  L= 33.49711  }
+	apic[13]  {nseg=10 diam= 2  L= 70.09814  }
+	apic[14]  {nseg=2 diam= 2  L= 40.81264  }
+	apic[15]  {nseg=1 diam= 2  L= 15.2801  }
+	apic[16]  {nseg=1 diam= 2  L= 17.47857  }
+	apic[17]  {nseg=8 diam= 1  L= 108.7753  }
+	apic[18]  {nseg=1 diam= .8  L= 10.96036  }
+	apic[19]  {nseg=2 diam= .8  L= 16.21915  }
+	apic[20]  {nseg=2 diam= .4  L= 26.14653  }
+	apic[21]  {nseg=6 diam= .4  L= 119.6609  }
+	apic[22]  {nseg=3 diam= .4  L= 39.18561  }
+	apic[23]  {nseg=3 diam= .4  L= 34.66425  }
+	apic[24]  {nseg=2 diam= .4  L= 31.36501  }
+	apic[25]  {nseg=2 diam= .4  L= 29.33217  }
+	apic[26]  {nseg=2 diam= 2  L= 31.1963  }
+	apic[27]  {nseg=4 diam= 1.4  L= 40.56636  }
+	apic[28]  {nseg=1 diam= 1.4  L= 4.73629  }
+	apic[29]  {nseg=5 diam= .8  L= 57.43425  }
+	apic[30]  {nseg=1 diam= .4  L= 21.68407  }
+	apic[31]  {nseg=1 diam= .4  L= 20.0452  }
+	apic[32]  {nseg=3 diam= .4  L= 64.84853  }
+	apic[33]  {nseg=3 diam= .4  L= 58.52066  }
+	apic[34]  {nseg=10 diam= .4  L= 230.365  }
+	apic[35]  {nseg=2 diam= .4  L= 37.58863  }
+	apic[36]  {nseg=4 diam= .4  L= 77.22144  }
+	apic[37]  {nseg=5 diam= .4  L= 112.0059  }
+	apic[38]  {nseg=2 diam= .4  L= 37.58242  }
+	apic[39]  {nseg=8 diam= .8  L= 89.90406  }
+	apic[40]  {nseg=1 diam= .8  L= 5.726318  }
+	apic[41]  {nseg=1 diam= .8  L= 1.514942  }
+	apic[42]  {nseg=2 diam= .8  L= 23.88437  }
+	apic[43]  {nseg=1 diam= .4  L= 3.340797  }
+	apic[44]  {nseg=1 diam= .4  L= 3.250262  }
+	apic[45]  {nseg=4 diam= .4  L= 86.1567  }
+	apic[46]  {nseg=3 diam= .4  L= 46.10009  }
+	apic[47]  {nseg=1 diam= .4  L= 23.62396  }
+	apic[48]  {nseg=4 diam= .4  L= 78.09839  }
+	apic[49]  {nseg=2 diam= .4  L= 41.05293  }
+	apic[50]  {nseg=3 diam= .4  L= 64.45201  }
+	apic[51]  {nseg=6 diam= .4  L= 135.1048  }
+	apic[52]  {nseg=4 diam= .4  L= 70.09399  }
+	apic[53]  {nseg=1 diam= .4  L= 11.29383  }
+	apic[54]  {nseg=3 diam= .4  L= 57.12379  }
+	apic[55]  {nseg=3 diam= .4  L= 51.23798  }
+	apic[56]  {nseg=1 diam= .4  L= .226719  }
+	apic[57]  {nseg=2 diam= .4  L= 42.9783  }
+	apic[58]  {nseg=6 diam= .4  L= 130.2097  }
+	apic[59]  {nseg=2 diam= .4  L= 26.79343  }
+	apic[60]  {nseg=5 diam= .4  L= 125.4406  }
+	apic[61]  {nseg=2 diam= .4  L= 32.70949  }
+	apic[62]  {nseg=2 diam= .4  L= 46.61235  }
+	apic[63]  {nseg=3 diam= .4  L= 55.72121  }
+	apic[64]  {nseg=5 diam= .4  L= 116.3788  }
+	apic[65]  {nseg=1 diam= .4  L= 13.57025  }
+	apic[66]  {nseg=6 diam= .4  L= 118.638  }
+	apic[67]  {nseg=1 diam= .4  L= 24.19888  }
+	apic[68]  {nseg=4 diam= .4  L= 96.23538  }
+	apic[69]  {nseg=3 diam= .4  L= 59.93812  }
+	apic[70]  {nseg=2 diam= .4  L= 64.90414  }
+	apic[71]  {nseg=1 diam= .4  L= .365519  }
+	apic[72]  {nseg=5 diam= .4  L= 118.724  }
+	apic[73]  {nseg=1 diam= .4  L= 5.153612  }
+	apic[74]  {nseg=7 diam= .4  L= 159.0847  }
+	apic[75]  {nseg=3 diam= .4  L= 65.16338  }
+	apic[76]  {nseg=3 diam= .8  L= 32.91693  }
+	apic[77]  {nseg=4 diam= .4  L= 84.05488  }
+	apic[78]  {nseg=3 diam= .8  L= 49.03632  }
+	apic[79]  {nseg=3 diam= .4  L= 65.3413  }
+	apic[80]  {nseg=7 diam= .4  L= 144.8597  }
+	apic[81]  {nseg=1 diam= .4  L= 2.782626  }
+	apic[82]  {nseg=1 diam= .4  L= 10.63182  }
+	apic[83]  {nseg=1 diam= .4  L= 14.79619  }
+	apic[84]  {nseg=1 diam= .4  L= 24.52155  }
+	apic[85]  {nseg=1 diam= .4  L= 19.95786  }
+	apic[86]  {nseg=1 diam= .4  L= 22.937  }
+	apic[87]   {nseg=1 diam= .4  L= 29.18237  }
+	apic[88]   {nseg=4 diam= .4  L= 93.45203  }
+	apic[89]   {nseg=3 diam= .4  L= 82.16525  }
+	apic[90]   {nseg=2 diam= 1  L= 28.88242  }
+	apic[91]   {nseg=1 diam= 1  L= 3.312038  }
+	apic[92]   {nseg=2 diam= 1  L= 31.43214  }
+	apic[93]   {nseg=4 diam= 1  L= 65.21848  }
+	apic[94]   {nseg=4 diam= 1  L= 65.93275  }
+	apic[95]   {nseg=1 diam= .4  L= 2.210091  }
+}
+
+proc size_sections2() {
+	apic[96]   {nseg=4 diam= .4  L= 80.05907  }
+	apic[97]   {nseg=1 diam= .4  L= 12.09364  }
+	apic[98]   {nseg=2 diam= .4  L= 40.26765  }
+	apic[99]   {nseg=2 diam= .4  L= 51.40726  }
+	apic[100]  {nseg=5 diam= .4  L= 113.2667  }
+	apic[101]  {nseg=6 diam= .4  L= 149.6538  }
+	apic[102]  {nseg=12 diam= .4  L= 271.828  }
+	apic[103]  {nseg=1 diam= .8  L= 19.2613  }
+	apic[104]  {nseg=5 diam= .4  L= 94.12336  }
+	apic[105]  {nseg=8 diam= .4  L= 170.9137  }
+	apic[106]  {nseg=1 diam= .8  L= 5.102267  }
+	apic[107]  {nseg=1 diam= .8  L= 10.26147  }
+	apic[108]  {nseg=6 diam= .4  L= 117.1293  }
+	apic[109]  {nseg=2 diam= .8  L= 30.43381  }
+	apic[110]  {nseg=4 diam= .4  L= 80.42423  }
+	apic[111]  {nseg=10 diam= .4  L= 202.9251  }
+	apic[112]  {nseg=7 diam= .4  L= 155.1176  }
+	apic[113]  {nseg=1 diam= 1.4  L= 11.20985  }
+	apic[114]  {nseg=1 diam= 1.4  L= 8.052182  }
+	apic[115]  {nseg=1 diam= .4  L= 17.14739  }
+	apic[116]  {nseg=1 diam= .4  L= 17.07239  }
+	apic[117]  {nseg=1 diam= .4  L= 3.802383  }
+	apic[118]  {nseg=4 diam= .4  L= 79.13516  }
+	apic[119]  {nseg=7 diam= .4  L= 132.4294  }
+	apic[120]  {nseg=1 diam= .8  L= 7.493482  }
+	apic[121]  {nseg=1 diam= .8  L= 16.02206  }
+	apic[122]  {nseg=1 diam= .4  L= 2.194287  }
+	apic[123]  {nseg=1 diam= .4  L= 14.77226  }
+	apic[124]  {nseg=4 diam= .4  L= 85.29885  }
+	apic[125]  {nseg=5 diam= .4  L= 108.0732  }
+	apic[126]  {nseg=4 diam= .4  L= 89.57475  }
+}
+
+proc size_sections3() {
+	dend[0]  {nseg=1 diam= .8  L= 2.888482  }
+	dend[1]  {nseg=1 diam= .8  L= 12.67608  }
+	dend[2]  {nseg=1 diam= .4  L= 6.226819  }
+	dend[3]  {nseg=2 diam= .4  L= 28.07395  }
+	dend[4]  {nseg=1 diam= .4  L= 19.26636  }
+	dend[5]  {nseg=1 diam= .4  L= 13.94479  }
+	dend[6]  {nseg=5 diam= .4  L= 110.2079  }
+	dend[7]  {nseg=4 diam= .4  L= 75.98547  }
+	dend[8]  {nseg=8 diam= .4  L= 153.798  }
+	dend[9]  {nseg=4 diam= .4  L= 91.32814  }
+	dend[10]  {nseg=3 diam= .4  L= 72.40762  }
+	dend[11]  {nseg=3 diam= .4  L= 68.55269  }
+	dend[12]  {nseg=1 diam= .8  L= 16.80424  }
+	dend[13]  {nseg=1 diam= .8  L= 14.56381  }
+	dend[14]  {nseg=1 diam= .4  L= .4899998  }
+	dend[15]  {nseg=1 diam= .4  L= 5.744193  }
+	dend[16]  {nseg=4 diam= .4  L= 116.2063  }
+	dend[17]  {nseg=3 diam= .4  L= 60.7986  }
+	dend[18]  {nseg=7 diam= .4  L= 140.8884  }
+	dend[19]  {nseg=4 diam= .4  L= 82.97742  }
+	dend[20] {nseg=2 diam= .4  L= 36.26253  }
+	dend[21] {nseg=5 diam= .4  L= 100.4919  }
+	dend[22] {nseg=3 diam= .4  L= 72.16766  }
+	dend[23] {nseg=1 diam= 1  L= 12.02422  }
+	dend[24] {nseg=1 diam= .8  L= 4.843154  }
+	dend[25] {nseg=1 diam= .8  L= 3.307597  }
+	dend[26] {nseg=1 diam= .4  L= 11.31487  }
+	dend[27] {nseg=1 diam= .4  L= 25.26186  }
+	dend[28] {nseg=1 diam= .4  L= 26.09189  }
+	dend[29] {nseg=3 diam= .4  L= 64  }
+	dend[30] {nseg=3 diam= .4  L= 70  }
+	dend[31] {nseg=4 diam= .4  L= 81.94038  }
+	dend[32] {nseg=7 diam= .4  L= 157.9888  }
+	dend[33]  {nseg=1 diam= .4  L= 12.65634  }
+	dend[34]  {nseg=2 diam= .4  L= 47.59445  }
+	dend[35]  {nseg=4 diam= .4  L= 87.35556  }
+	dend[36]  {nseg=5 diam= .4  L= 92.50491  }
+	dend[37]  {nseg=1 diam= .4  L= 21.87688  }
+	dend[38]  {nseg=4 diam= .4  L= 86.62627  }
+	dend[39]  {nseg=3 diam= .4  L= 74.35841  }
+	dend[40]  {nseg=4 diam= .4  L= 92.61662  }
+	dend[41] {nseg=1 diam= 1  L= 9.526773  }
+	dend[42] {nseg=1 diam= 1  L= 3.523762  }
+	dend[43] {nseg=1 diam= .8  L= 11.17033  }
+	dend[44] {nseg=1 diam= .4  L= 5.654395  }
+	dend[45] {nseg=1 diam= .4  L= 10.01039  }
+	dend[46] {nseg=1 diam= .4  L= 21.26989  }
+	dend[47] {nseg=2 diam= .4  L= 38.8982  }
+	dend[48] {nseg=6 diam= .4  L= 125.4449  }
+	dend[49] {nseg=7 diam= .4  L= 137.2615  }
+	dend[50] {nseg=3 diam= .4  L= 66.48241  }
+	dend[51]  {nseg=1 diam= 1  L= .5340415  }
+	dend[52]  {nseg=1 diam= 1  L= 7.411953  }
+	dend[53]  {nseg=4 diam= .4  L= 80.27492  }
+	dend[54]  {nseg=1 diam= .8  L= 11.25394  }
+	dend[55]  {nseg=1 diam= .4  L= 7.328401  }
+	dend[56]  {nseg=5 diam= .4  L= 100.9536  }
+	dend[57]  {nseg=2 diam= .4  L= 32.70675  }
+	dend[58]  {nseg=8 diam= .4  L= 165.4767  }
+	dend[59]  {nseg=8 diam= .4  L= 161.9148  }
+}
+
+
+proc rotate_shape() {local i
+	forsec all {
+		for i=0,n3d()-1 {
+			pt3dchange(i, y3d(i), x3d(i), z3d(i), diam3d(i))
+		}
+	}
+}
+
+external lambda_f
+proc set_nseg() {
+  forsec all { nseg = int((L/(0.1*lambda_f(100))+.9)/2)*2 + 1  }
+}
+
+proc mechinit() {
+	NumSoma=13
+	Numapic=127
+	Numdend=60
+	NumAxon=2
+
+	Rm = 28000 // 5555 //
+	RmDend = Rm/2
+	RmSoma = Rm
+	RmAx = Rm
+
+	Cm    = 1
+	CmSoma= Cm
+	CmAx  = Cm
+	CmDend = Cm*2
+
+	celsius = 34.0
+
+	RaAll= 150
+	RaSoma=150
+	RaAx = 50
+
+
+	ekval = -90
+	enaval = 55
+	eHCNval = -30
+	eleakval = 	Vrest // not lower than ekval
+
+	gNav     = 0.032 // Nav conductance in mho/cm2
+	gNavaxon = 0.064 // axon multiplier for Nav conductance
+	gKdr     = 0.003 // Kdr conductance in mho/cm2
+	gKvAdist = 0.008 // distal KvA conductance in mho/cm2
+	gKvAprox = 0.008 // proximal KvA conductance in mho/cm2
+	gHCN     = 0.0006 // hcurrent conductance in mho/cm2 --> 6 pS/um2
+}
+
+proc insert_mechs() {
+	access soma[5]
+	distance() // calculates the distance between location 0 of the currently accessed section (as the origin) to a second point (but with this usage, it just sets the origin point)
+
+    for i=0,10 axon[i] {
+        insert pas e_pas=eleakval  g_pas = 1/RmSoma Ra=RaSoma cm = CmSoma
+        insert na12
+        insert na16
+        insert kv
+        //gbar_cav31 = 0.008
+    }
+
+    axon[11]{
+        insert pas e_pas=eleakval  g_pas = 1/RmSoma Ra=RaSoma cm = CmSoma
+        insert na12
+        insert na16
+        insert kv
+    }
+
+	for i=0,NumSoma-1 soma[i] {
+		insert ch_HCNp gmax_ch_HCNp=gHCN
+		vhalfl_ch_HCNp=-82
+		insert ch_Navp  gmax_ch_Navp=gNav
+		ar2_ch_Navp=1
+		insert ch_Kdrp gmax_ch_Kdrp=gKdr
+		insert ch_KvAproxp gmax_ch_KvAproxp = gKvAprox
+		insert pas e_pas=eleakval g_pas = 1/RmSoma Ra=RaSoma cm=CmSoma
+	}
+
+	for i=0,Numdend-1 dend[i] {
+		insert ch_Navp    gmax_ch_Navp=gNav
+		ar2_ch_Navp=1
+		insert ch_Kdrp gmax_ch_Kdrp=gKdr
+		insert ch_KvAproxp gmax_ch_KvAproxp = gKvAprox
+		insert pas e_pas=eleakval g_pas = 1/RmDend Ra=RaAll cm=CmDend
+	}
+
+	for i=0,Numapic-1 apic[i] {
+		insert pas e_pas=eleakval g_pas = 1/RmDend Ra=RaAll  cm=CmDend
+		if (diam>0.5 && distance(0.5)<500) {
+			insert ch_HCNp gmax_ch_HCNp = gHCN
+			insert ch_Navp
+			ar2_ch_Navp=0.8
+			gmax_ch_Navp=gNav
+			insert ch_Kdrp
+			gmax_ch_Kdrp=gKdr
+			insert ch_KvAproxp
+			insert ch_KvAdistp
+			gmax_ch_KvAproxp=0
+			gmax_ch_KvAdistp=0
+
+			for (x,0){ xdist = distance(x)
+				if (xdist>500) {xdist=500}
+				gmax_ch_HCNp(x) = gHCN*(1+1.5*xdist/100)
+				if (xdist > 100){
+					vhalfl_ch_HCNp=-90
+					gmax_ch_KvAdistp(x) = gKvAdist*(1+xdist/100)
+				} else {
+					vhalfl_ch_HCNp=-82
+					gmax_ch_KvAproxp(x) = gKvAprox*(1+xdist/100)
+				}
+			}
+		}
+	}
+
+	forall {
+        v=Vrest
+        if (ismembrane("ch_Navaxonp") || ismembrane("ch_Navp")) {ena=enaval}
+        if (ismembrane("ch_Kdrp") || ismembrane("ch_KvAproxp") || ismembrane("ch_KvAdistp")) {ek=ekval}
+        if (ismembrane("ch_HCNp") ) {e_ch_HCNp=eHCNval}
+	}
+}
+
+
+func is_art() { return 0 }
+
+proc connect_pre() {  // $o1 target point process, $o2 returned NetCon
+	soma $o2 = new NetCon (&v(1), $o1)
+			$o2.threshold = -10
+}
+
+proc position(){ local i
+	forall {
+		for i = 0, n3d()-1 {
+			pt3dchange(i, $1-x+x3d(i), $2-y+y3d(i), $3-z+z3d(i), diam3d(i))
+		}
+	}
+	x = $1  y = $2  z = $3
+}
+/*
+proc get_root() {local i localobj sref
+	rootlist = new SectionList()
+	rootlist.allroots()
+	i=0
+	forsec all {
+		for(x,0) { if (diam(x) <=0.01) print "small diameter at ", secname(), diam(x) }
+		if (L<=0.001) print "small length at: ", secname(), L
+		sref = new SectionRef()
+		if (sref.has_parent==0) {
+			myroot = secname()
+			i=i+1
+		}
+	}
+	if (i>1) {
+		print "WARNING: cell ", gid, " has ", i, " root sections!"
+	}
+}
+
+strdef myStr
+
+objref newSecRef, syn
+proc define_synapses() {
+	ind = $1
+	i = 0
+
+	access soma[0]
+	{distance()}
+
+	for celltype = 0, numCellTypes-1 {
+		templist = new List ()
+		for r=0, cellType[ind].SynList[celltype].count()-1 {
+			execute(cellType[ind].SynList[celltype].object(r).NewSynStr, this) // sets newSecRef
+
+			forsec newSecRef {
+				for (x,0) {
+					execute(cellType[ind].SynList[celltype].object(r).CondStr, this)
+					 if (y==1) {
+						execute(cellType[ind].SynList[celltype].object(r).SynStr, this)
+						if (cellType[ind].SynList[celltype].object(r).GABAabFlag==0) {
+							syn.tau1 = cellType[ind].SynList[celltype].object(r).tau1
+							syn.tau2 = cellType[ind].SynList[celltype].object(r).tau2
+							syn.e = cellType[ind].SynList[celltype].object(r).efirst
+							if (strcmp(cellType[ind].SynList[celltype].object(r).SynType,"MyExp2Sidnw")==0) {
+								execute(cellType[ind].SynList[celltype].object(r).Scaling, this)
+							}
+						} else {
+							syn.tau1a = cellType[ind].SynList[celltype].object(r).tau1a
+							syn.tau2a = cellType[ind].SynList[celltype].object(r).tau2a
+							syn.ea = cellType[ind].SynList[celltype].object(r).ea
+							syn.tau1b = cellType[ind].SynList[celltype].object(r).tau1b
+							syn.tau2b = cellType[ind].SynList[celltype].object(r).tau2b
+							syn.eb = cellType[ind].SynList[celltype].object(r).eb
+						}
+						syn.sid = i
+						templist.append(syn)
+						i = i + 1
+					}
+				}
+			}
+		}
+		pre_list.append(templist)
+		findme = 1
+	}
+}
+*/
+endtemplate pyramidalcell

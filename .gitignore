@@ -1,0 +1,7 @@
+CA1_model_env/
+/network
+/output
+/biophys_components/mechanisms/modfiles/*.[co]
+/CA1_inputs
+*.png
+.DS_Store
