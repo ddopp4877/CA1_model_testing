@@ -4,7 +4,7 @@ import numpy as np
 import synapses
 import warnings
 from bmtk.simulator.core import simulation_config 
-
+import neuron as h
 def run(config_file):
     warnings.simplefilter(action='ignore', category=FutureWarning)
     synapses.load()

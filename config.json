@@ -1,4 +1,4 @@
 {
-  "network": "/Users/gregglickert/Documents/GitHub/CA1_model/circuit_config.json",
-  "simulation": "/Users/gregglickert/Documents/GitHub/CA1_model/simulation_config.json"
+  "network": "/Users/ddopp/source/repos/CA1_model/circuit_config.json",
+  "simulation": "/Users/ddopp/source/repos/CA1_model/simulation_configLFP.json"
 }

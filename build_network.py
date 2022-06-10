@@ -633,7 +633,7 @@ psg = PoissonSpikeGenerator(population='bgpn')
 
 psg.add(node_ids=range(3),  # need same number as cells
         firing_rate=50000,    # 1 spike every 5 seconds Hz
-        times=(1/1000, 2/1000))  # time is in seconds for some reason
+        times=(0, 2/1000))  # time is in seconds for some reason
 
 
 psg.to_sonata('CA1_inputs/bg_pn_spikes.h5')
@@ -657,6 +657,7 @@ vNet.add_edges(source=vNet.nodes(), target=net.nodes(pop_name='Pyr'),
               syn_weight=100,
               target_sections=['somatic'],
               delay=0.1,
+              distance_range=[0.0, 1000.0],
 
               dynamics_params='AMPA_ExcToExc.json',
               model_template='exp2syn')
@@ -676,28 +677,17 @@ vNet.save_edges(output_dir='network')
 
 t_stim = 1000.0
 
-#build_env_bionet(base_dir='./',
-#                network_dir='./network',
-#                config_file='config.json',
-#                tstop=t_stim, dt=0.1,
-#                report_vars=['v'],
-#                components_dir='biophys_components',
-#                spikes_inputs=[('bg_pn', 'CA1_inputs/bg_pn_spikes.h5')],
-                #clamp_reports=['se'],
-                #se_voltage_clamp={
-                #    'amps':[[-70, -70, -70]],
-                #    'durations': [[t_stim, t_stim, t_stim]],
-                #    'gids': [925],
-                #    'rs': [0.01],
-                #},
-#                current_clamp={
-#                     'amp': 0.500,
-#                     'delay': 200.0,
-#                     'duration': 15.0,
-#                     'gids': [15, 1051, 1064, 1088, 1100, 1128]
-#                },
-#                v_init=-70,
-#                compile_mechanisms=False)
+build_env_bionet(base_dir='./',
+                network_dir='./network',
+                config_file='config.json',
+                tstop=t_stim, dt=0.1,
+                report_vars=['v'],
+                components_dir='biophys_components',
+
+                spikes_inputs=[('bgpn', 'CA1_inputs/bg_pn_spikes.h5')],
+
+                v_init=-70,
+                compile_mechanisms=False)
 
 
 
