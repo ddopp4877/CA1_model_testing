@@ -42,6 +42,9 @@ numPV_inSO = int(round(numPV*0.238))
 numPV_inSP = int(round(numPV*0.701))
 numPV_inSR = int(round(numPV*0.0596))
 
+totalCellNum = numAAC_inSO + numAAC_inSP + numAAC_inSR + numCCK_inSO + numCCK_inSP + numCCK_inSR + numCCK_inSLM + numNGF_inSR + numNGF_inSLM + numPV_inSO + numPV_inSP + numPV_inSR
+
+
 # total 400x1000x450
 # Order from top to bottom is SO,SP,SR,SLM total
 # SO layer
@@ -668,11 +671,14 @@ t_stim = 1000.0
 #                compile_mechanisms=False)
 
 
-psg = PoissonSpikeGenerator(population='bg_pn')
 
-psg.add(node_ids=range(numPyr),  # need same number as cells
-        firing_rate=0.000005,    # 1 spike every 5 seconds Hz
-        times=(0.0, t_stim/1000))  # time is in seconds for some reason
+psg = PoissonSpikeGenerator(population='bgpn')
+
+psg.add(node_ids=1,  # need same number as cells
+        firing_rate=50000,    # 1 spike every 5 seconds Hz
+        times=(1/1000, 2/1000))  # time is in seconds for some reason
+
+
 psg.to_sonata('CA1_inputs/bg_pn_spikes.h5')
 
 #print('Number of background spikes to PN cells: {}'.format(psg.n_spikes()))

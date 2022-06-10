@@ -30,6 +30,12 @@
       "amp": 0.5,
       "delay": 150.0,
       "duration": 7.0
+    },
+    "bg_pn_spikes": {
+      "input_type": "spikes",
+      "module": "h5",
+      "input_file": "${BASE_DIR}/CA1_inputs/bg_pn_spikes.h5",
+      "node_set": "all"
     }
   },
   "output": {

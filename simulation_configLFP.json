@@ -2,7 +2,7 @@
   "manifest": {
     "$BASE_DIR": "${configdir}",
     "$OUTPUT_DIR": "$BASE_DIR/output",
-    "$INPUT_DIR": "$BASE_DIR/CA1_inputs",
+    "$INPUT_DIR": "$BASE_DIR\\CA1_inputs",
     "$COMPONENTS_DIR": "$BASE_DIR/biophys_components"
   },
   "target_simulator": "NEURON",
@@ -19,26 +19,14 @@
     "v_init": -70.0
   },
   "inputs": {
-    "current_clamp": {
-      "input_type": "current_clamp",
-      "module": "IClamp",
-      "node_set": "all",
-      "gids": [
-        13,
-        5
-      ],
-      "amp": 0.5,
-      "delay": 200.0,
-      "duration": 7.0
-    },
-    "bg_pn_spikes": {
+    
+    "bgpn": {
       "input_type": "spikes",
       "module": "sonata",
-      "input_file": "$BASE_DIR/CA1_inputs/bg_pn_spikes.h5",
-      "node_set": "bg_pn"
+      "input_file": "$INPUT_DIR\\bg_pn_spikes.h5",
+      "node_set" : [1]
+      
     }
-
-
  
   },
   "output": {
@@ -54,6 +42,12 @@
       "electrode_positions": "$COMPONENTS_DIR/recXelectrodes/linear_electrode.csv",
       "file_name": "ecp.h5",
       "electrode_channels": "all"
+      },
+      "v_report": {
+        "variable_name": "v",
+        "cells": "all",
+        "module": "membrane_report",
+        "sections": "soma"
       }
   },
   "node_sets_file": "$BASE_DIR/node_sets.json",
