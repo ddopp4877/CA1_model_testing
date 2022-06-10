@@ -18,13 +18,25 @@
       {
         "node_types_file": "$NETWORK_DIR/biophysical_node_types.csv",
         "nodes_file": "$NETWORK_DIR/biophysical_nodes.h5"
-      }
+      },
+      {
+        "node_types_file": "$NETWORK_DIR/bgpn_node_types.csv",
+      "nodes_file": "$NETWORK_DIR/bgpn_nodes.h5"
+     }
+
     ],
     "edges": [
       {
         "edges_file": "$NETWORK_DIR/biophysical_biophysical_edges.h5",
         "edge_types_file": "$NETWORK_DIR/biophysical_biophysical_edge_types.csv"
+      },
+
+      {
+        "edges_file": "$NETWORK_DIR/bgpn_biophysical_edges.h5",
+        "edge_types_file": "$NETWORK_DIR/bgpn_biophysical_edge_types.csv"
       }
+
+      
     ],
     "gap_juncs": []
   }

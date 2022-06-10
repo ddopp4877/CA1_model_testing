@@ -623,19 +623,48 @@ conn = net.add_edges(source={'pop_name': 'NGF'}, target={'pop_name': 'Pyr'},
 """
 
 #rint('background connections')
-#net.add_edges(source=background_PN.nodes(), target=net.nodes(pop_name='Pyr'),
-#              connection_rule=one_to_one,
-#              syn_weight=1,
-#              target_sections=['somatic'],
-#              delay=0.1,
-#              distance_range=[0.0, 300.0],
-#              dynamics_params='AMPA_ExcToExc.json',
-#              model_template='exp2syn')
 
 print("building bio cells")
 net.build()
 print("Saving bio cells")
 net.save(output_dir='network')
+
+psg = PoissonSpikeGenerator(population='bgpn')
+
+psg.add(node_ids=range(3),  # need same number as cells
+        firing_rate=50000,    # 1 spike every 5 seconds Hz
+        times=(1/1000, 2/1000))  # time is in seconds for some reason
+
+
+psg.to_sonata('CA1_inputs/bg_pn_spikes.h5')
+
+
+vNet = NetworkBuilder('bgpn')
+vNet.add_nodes(
+    N=3,
+    pop_name='bgpn',
+    potential='exc',
+    model_type='virtual'
+)
+for item in net.nodes(pop_name='Pyr'):
+    print(item)
+#net.nodes(pop_name='Pyr')
+for item in vNet.nodes():
+    print(item)
+print(numAAC_inSO + numAAC_inSP + numAAC_inSR)
+vNet.add_edges(source=vNet.nodes(), target=net.nodes(pop_name='Pyr'),
+              connection_rule= 1,
+              syn_weight=100,
+              target_sections=['somatic'],
+              delay=0.1,
+
+              dynamics_params='AMPA_ExcToExc.json',
+              model_template='exp2syn')
+vNet.build()
+vNet.save_nodes(output_dir='network')
+vNet.save_edges(output_dir='network')
+
+
 
 #print("building virtual cells")
 #background_PN.build()
@@ -672,14 +701,6 @@ t_stim = 1000.0
 
 
 
-psg = PoissonSpikeGenerator(population='bgpn')
-
-psg.add(node_ids=1,  # need same number as cells
-        firing_rate=50000,    # 1 spike every 5 seconds Hz
-        times=(1/1000, 2/1000))  # time is in seconds for some reason
-
-
-psg.to_sonata('CA1_inputs/bg_pn_spikes.h5')
 
 #print('Number of background spikes to PN cells: {}'.format(psg.n_spikes()))
 

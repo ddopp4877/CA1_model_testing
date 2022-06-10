@@ -24,7 +24,7 @@
       "input_type": "spikes",
       "module": "sonata",
       "input_file": "$INPUT_DIR\\bg_pn_spikes.h5",
-      "node_set" : [1]
+      "node_set" : "all"
       
     }
  
