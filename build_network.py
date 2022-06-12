@@ -17,12 +17,13 @@ np.random.seed(seed)
 print("placing cells in space")
 net = NetworkBuilder("biophysical")
 # amount of cells
-numAAC = 14  # 147
-numCCK = 1  # 360
-numNGF = 1  # 580
-numOLM = 16  # 164
-numPV = 50  # 553
-numPyr = 3  # 31150
+numAAC = 50  # 147
+numCCK = 10  # 360
+numNGF = 10  # 580
+numOLM = 10 # 164
+numPV = 10  # 553
+numPyr = 10  # 31150
+
 # arrays for cell location csv
 cell_name = []
 cell_x = []
@@ -107,19 +108,6 @@ pos_list = np.delete(pos_list_SO, inds, 0)
 inds = np.random.choice(np.arange(0, np.size(pos_list_SO, 0)), numCCK_inSO, replace=False)
 pos = pos_list_SO[inds, :]
 
-# Place cell
-#net.add_nodes(N=numCCK_inSO, pop_name='CCK',
-#              positions=positions_list(positions=pos),
-#              mem_potential='e',
-#              model_type='biophysical',
-#              model_template='hoc:cckcell',
-#              morphology=None)
-# save location in array delete used locations
-#for i in range(numCCK_inSO):
-#    cell_name.append("CCK in SO layer")
-#    cell_x.append(pos[i][0])
-#    cell_y.append(pos[i][1])
-#    cell_z.append(pos[i][2])
 
 pos_list_SO = np.delete(pos_list_SO, inds, 0)
 
@@ -212,19 +200,7 @@ pos_list = np.delete(pos_list_SP, inds, 0)
 inds = np.random.choice(np.arange(0, np.size(pos_list_SP, 0)), numCCK_inSP, replace=False)
 pos = pos_list_SP[inds, :]
 
-# Place cell
-#net.add_nodes(N=numCCK_inSP, pop_name='CCK',
-#              positions=positions_list(positions=pos),
-#              mem_potential='e',
-#              model_type='biophysical',
-#              model_template='hoc:cckcell',
-#              morphology=None)
-# save location in array delete used locations
-#for i in range(numCCK_inSP):
-#    cell_name.append("CCK in SP layer")
-#    cell_x.append(pos[i][0])
-#    cell_y.append(pos[i][1])
-#    cell_z.append(pos[i][2])
+
 
 pos_list_SO = np.delete(pos_list_SP, inds, 0)
 
@@ -272,45 +248,12 @@ for i in range(numAAC_inSR):
 
 pos_list = np.delete(pos_list_SR, inds, 0)
 
-# CCK basket
-# Pick location
-inds = np.random.choice(np.arange(0, np.size(pos_list_SR, 0)), numCCK_inSR, replace=False)
-pos = pos_list_SR[inds, :]
-
-# Place cell
-#net.add_nodes(N=numCCK_inSR, pop_name='CCK',
-#              positions=positions_list(positions=pos),
-#              mem_potential='e',
-#              model_type='biophysical',
-#              model_template='hoc:cckcell',
-#              morphology=None)
-# save location in array delete used locations
-#for i in range(numCCK_inSR):
-#    cell_name.append("CCK in SR layer")
-#    cell_x.append(pos[i][0])
-#    cell_y.append(pos[i][1])
-#    cell_z.append(pos[i][2])
-
-pos_list_SO = np.delete(pos_list_SR, inds, 0)
 
 # NGF basket
 # Pick location
 inds = np.random.choice(np.arange(0, np.size(pos_list_SR, 0)), numNGF_inSR, replace=False)
 pos = pos_list_SR[inds, :]
 
-# Place cell
-#net.add_nodes(N=numNGF_inSR, pop_name='NGF',
-#             positions=positions_list(positions=pos),
-#             mem_potential='e',
-#             model_type='biophysical',
-#              model_template='hoc:ngfcell',
-#              morphology=None)
-# save location in array delete used locations
-#for i in range(numNGF_inSR):
-#    cell_name.append("NGF in SR layer")
-#    cell_x.append(pos[i][0])
-#    cell_y.append(pos[i][1])
-#    cell_z.append(pos[i][2])
 
 pos_list_SO = np.delete(pos_list_SR, inds, 0)
 
@@ -343,19 +286,7 @@ pos_list_SO = np.delete(pos_list_SR, inds, 0)
 inds = np.random.choice(np.arange(0, np.size(pos_list_SLM, 0)), numCCK_inSLM, replace=False)
 pos = pos_list_SLM[inds, :]
 
-# Place cell
-#net.add_nodes(N=numCCK_inSLM, pop_name='CCK',
-#              positions=positions_list(positions=pos),
-#              mem_potential='e',
-#              model_type='biophysical',
-#             model_template='hoc:cckcell',
-#             morphology=None)
-# save location in array delete used locations
-#for i in range(numCCK_inSLM):
-#    cell_name.append("CCK in SLM layer")
-#    cell_x.append(pos[i][0])
-#    cell_y.append(pos[i][1])
-#    cell_z.append(pos[i][2])
+
 
 pos_list_SO = np.delete(pos_list_SLM, inds, 0)
 
@@ -364,19 +295,7 @@ pos_list_SO = np.delete(pos_list_SLM, inds, 0)
 inds = np.random.choice(np.arange(0, np.size(pos_list_SLM, 0)), numNGF_inSLM, replace=False)
 pos = pos_list_SLM[inds, :]
 
-# Place cell
-#net.add_nodes(N=numNGF_inSLM, pop_name='NGF',
-#              positions=positions_list(positions=pos),
-#              mem_potential='e',
-#              model_type='biophysical',
-#              model_template='hoc:ngfcell',
-#              morphology=None)
-# save location in array delete used locations
-#for i in range(numNGF_inSLM):
-#    cell_name.append("NGF in SLM layer")
-#    cell_x.append(pos[i][0])
-#    cell_y.append(pos[i][1])
-#    cell_z.append(pos[i][2])
+
 
 pos_list_SO = np.delete(pos_list_SLM, inds, 0)
 
@@ -387,11 +306,6 @@ for i in range(len(cell_name)):
 df.to_csv("cell_locations.csv")
 count = 0
 
-#background_PN = NetworkBuilder('bg_pn')
-#background_PN.add_nodes(N=numPyr,
-#                   pop_name='tON',
-#                   potential='exc',
-#                   model_type='virtual')
 
 def AAC_to_PYR(src, trg, a, x0, sigma, max_dist):
     if src.node_id == trg.node_id:
@@ -434,16 +348,7 @@ def n_connections(src, trg, max_dist, prob=0.1):
         else:
             return 1
 
-def one_to_one(source, target):
-    sid = source.node_id
-    tid = target.node_id
-    if sid == tid:
-        # print("connecting cell {} to {}".format(sid,tid))
-        tmp_nsyn = 1
-    else:
-        return None
 
-    return tmp_nsyn
 
 
 print('AAC connections')
@@ -477,9 +382,6 @@ conn = net.add_edges(source={'pop_name': 'Pyr'}, target={'pop_name': 'AAC'},
                      sec_id=6,  # checked and is working well
                      sec_x=0.5)
 
-# dynamics_params='PN2INT.json',
-# model_template=syn['PN2INT.json']['level_of_detail'],
-# convergence of 17
 
 print('PV connections')
 conn = net.add_edges(source={'pop_name': 'PV'}, target={'pop_name': 'Pyr'},
@@ -593,34 +495,6 @@ conn = net.add_edges(source={'pop_name': 'Pyr'}, target={'pop_name': 'OLM'},
                      sec_id=2,
                      sec_x=0.5)
 
-"""
-#convergence of 13
-print("CCK connections")
-conn = net.add_edges(source={'pop_name': 'CCK'}, target={'pop_name': 'Pyr'},
-                     connection_rule=n_connections,
-                     connection_params={'prob': 0.0529, 'max_dist': 500},
-                     syn_weight=1,
-                     delay=0.1,
-                     dynamics_params='GABA_InhToExc.json',
-                     model_template='exp2syn',
-                     distance_range=[0.0, 500.0],
-                     target_sections=['basal, apical'],
-                     sec_id=0,
-                     sec_x=0.5)
-#convergence 14
-print("NGF connections")
-conn = net.add_edges(source={'pop_name': 'NGF'}, target={'pop_name': 'Pyr'},
-                     connection_rule=n_connections,
-                     connection_params={'prob': 0.0385, 'max_dist': 500},
-                     syn_weight=1,
-                     delay=0.1,
-                     dynamics_params='GABA_InhToExc.json',
-                     model_template='exp2syn',
-                     distance_range=[0.0, 500.0],
-                     target_sections=['apical'],
-                     sec_id=0,
-                     sec_x=0.5)
-"""
 
 #rint('background connections')
 
@@ -629,35 +503,36 @@ net.build()
 print("Saving bio cells")
 net.save(output_dir='network')
 
-psg = PoissonSpikeGenerator(population='bgpn')
+psg = PoissonSpikeGenerator(population='bgpn',
+       seed=222)
 
-psg.add(node_ids=range(3),  # need same number as cells
-        firing_rate=50000,    # 1 spike every 5 seconds Hz
-        times=(0, 2/1000))  # time is in seconds for some reason
-
+psg.add(node_ids=range(0,80),  # need same number as cells
+        firing_rate=20,    # 1 spike every 5 seconds Hz
+        times=(0, 300/1000))
 
 psg.to_sonata('CA1_inputs/bg_pn_spikes.h5')
 
 
 vNet = NetworkBuilder('bgpn')
 vNet.add_nodes(
-    N=3,
+    N=totalCellNum,
     pop_name='bgpn',
     potential='exc',
     model_type='virtual'
 )
-for item in net.nodes(pop_name='Pyr'):
+for item in net.nodes():
     print(item)
-#net.nodes(pop_name='Pyr')
+
 for item in vNet.nodes():
     print(item)
-print(numAAC_inSO + numAAC_inSP + numAAC_inSR)
-vNet.add_edges(source=vNet.nodes(), target=net.nodes(pop_name='Pyr'),
-              connection_rule= 1,
-              syn_weight=100,
+
+
+vNet.add_edges(source=vNet.nodes(), target=net.nodes(),
+              connection_rule= lambda source,target: source.node_id == target.node_id,
+              syn_weight=1,
               target_sections=['somatic'],
               delay=0.1,
-              distance_range=[0.0, 1000.0],
+              distance_range=[0.0, 400],
 
               dynamics_params='AMPA_ExcToExc.json',
               model_template='exp2syn')
@@ -667,28 +542,22 @@ vNet.save_edges(output_dir='network')
 
 
 
-#print("building virtual cells")
-#background_PN.build()
-#print("saving virtual cells")
-#background_PN.save_nodes(output_dir='network')
-
-#print(count)
-
 
 t_stim = 1000.0
-
+#use the below on the first build, then add mechanisms directory to the circuit config manually and comment out what is below
+"""
 build_env_bionet(base_dir='./',
                 network_dir='./network',
                 config_file='config.json',
                 tstop=t_stim, dt=0.1,
                 report_vars=['v'],
                 components_dir='biophys_components',
-
+                
                 spikes_inputs=[('bgpn', 'CA1_inputs/bg_pn_spikes.h5')],
 
                 v_init=-70,
                 compile_mechanisms=False)
-
+"""
 
 
 
