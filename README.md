@@ -37,3 +37,9 @@ currently the input is iclamp on cells 3 and 15
 this stimulates the chandelier cells and 
 background noise is currently not used, so make sure to include that.
 should the background spikes be for all inputs, or just the pyramidal cells?
+
+
+using build_env_bionet will create a circuit json which the from_config in run_network.py cannot find the modfiles for some reason.
+but, the build_env_bionet() will create a proper simulation_config.json, so run build_network as is,
+then add mechanisms_dir": "$COMPONENTS_DIR\\mechanisms\\modfiles",
+to the circuit_config.json file
