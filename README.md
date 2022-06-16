@@ -43,3 +43,4 @@ using build_env_bionet will create a circuit json which the from_config in run_n
 but, the build_env_bionet() will create a proper simulation_config.json, so run build_network as is,
 then add mechanisms_dir": "$COMPONENTS_DIR\\mechanisms\\modfiles",
 to the circuit_config.json file
+make a setup folder which uses utils to make the circuit and sim jsons, and also compiles the modfiles and edits the json as needed.

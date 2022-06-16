@@ -17,12 +17,12 @@ np.random.seed(seed)
 print("placing cells in space")
 net = NetworkBuilder("biophysical")
 # amount of cells
-numAAC = 50  # 147
-numCCK = 10  # 360
-numNGF = 10  # 580
-numOLM = 10 # 164
-numPV = 10  # 553
-numPyr = 10  # 31150
+numAAC = 147  # 147
+numCCK = 360  # 360
+numNGF = 580  # 580
+numOLM = 1564 # 164
+numPV = 553  # 553
+numPyr = 31150  # 31150
 
 # arrays for cell location csv
 cell_name = []
@@ -506,9 +506,9 @@ net.save(output_dir='network')
 psg = PoissonSpikeGenerator(population='bgpn',
        seed=222)
 
-psg.add(node_ids=range(0,80),  # need same number as cells
-        firing_rate=20,    # 1 spike every 5 seconds Hz
-        times=(0, 300/1000))
+psg.add(node_ids=range(0,totalCellNum),  # need same number as cells
+        firing_rate=5,    # spikes/second
+        times=(0, 300/1000))#seconds
 
 psg.to_sonata('CA1_inputs/bg_pn_spikes.h5')
 
